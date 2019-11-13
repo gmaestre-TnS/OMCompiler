@@ -1605,19 +1605,20 @@ template functionInput(SimCode simCode, ModelInfo modelInfo, String modelNamePre
     {
       TRACE_PUSH
 
-      int counter = 0;
-       
-      <%vars.inputVars |> SIMVAR(name=name, type_=T_BOOL()) hasindex i0 =>
-        '<%cref(name)%> = data->simulationInfo->inputVars[counter];<%\n%>counter++;'
-        ;separator="\n"
-      %>
-      <%vars.inputVars |> SIMVAR(name=name, type_=T_INTEGER()) hasindex i0 =>
-        '<%cref(name)%> = data->simulationInfo->inputVars[counter];<%\n%>counter++;'
-        ;separator="\n"
-      %>
-      <%vars.inputVars |> SIMVAR(name=name, type_=T_REAL()) hasindex i0 =>
-        '<%cref(name)%> = data->simulationInfo->inputVars[counter];<%\n%>counter++;'
-        ;separator="\n"
+      <%vars.inputVars |> simVar as SIMVAR(__) hasindex i0 =>
+        match cref2simvar(name, simCode)
+        case SIMVAR(type_=T_BOOL()) then
+        <<
+          <%cref(name)%> = data->simulationInfo->inputVars[<%i0%>];<%\n%>
+        >>
+        case SIMVAR(type_=T_INTEGER()) then
+        <<
+          <%cref(name)%> = data->simulationInfo->inputVars[<%i0%>];<%\n%>
+        >>
+        case SIMVAR(type_=T_REAL()) then
+        <<
+          <%cref(name)%> = data->simulationInfo->inputVars[<%i0%>];<%\n%>
+        >>
       %>
 
       TRACE_POP
